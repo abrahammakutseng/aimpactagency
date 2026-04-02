@@ -571,22 +571,22 @@
         <p>We're working with a small group of Australian small businesses to refine our process. Early access is free to start — and gives you first priority when our full service launches.</p>
       </div>
       <div class="reveal">
-        <div id="form-wrap">
+        <form id="form-wrap" action="https://formspree.io/f/maqldkbz" method="POST">
           <div class="form-group">
             <label>Your name</label>
-            <input type="text" id="f-name" placeholder="Jane Smith">
+            <input type="text" name="name" id="f-name" placeholder="Jane Smith">
           </div>
           <div class="form-group">
             <label>Business name</label>
-            <input type="text" id="f-biz" placeholder="Smith & Co.">
+            <input type="text" name="business" id="f-biz" placeholder="Smith & Co.">
           </div>
           <div class="form-group">
             <label>Email address</label>
-            <input type="email" id="f-email" placeholder="jane@smithandco.com.au">
+            <input type="email" name="email" id="f-email" placeholder="jane@smithandco.com.au">
           </div>
           <div class="form-group">
             <label>Business type</label>
-            <select id="f-type">
+            <select name="business_type" id="f-type">
               <option value="">Select one…</option>
               <option>Retail</option>
               <option>Hospitality / Food & Beverage</option>
@@ -596,9 +596,9 @@
               <option>Other</option>
             </select>
           </div>
-          <button class="form-submit" onclick="handleSubmit()">Request early access →</button>
+          <button type="submit" class="form-submit">Request early access →</button>
           <p class="form-disclaimer">No spam. No commitment. We'll be in touch within 2 business days.</p>
-        </div>
+        </form>
         <div class="success-msg" id="success-msg">
           <h3>You're on the list.</h3>
           <p>Thanks for your interest. We'll be in touch within 2 business days to learn more about your business.</p>
@@ -627,21 +627,29 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
-  // Form submit
-  function handleSubmit() {
+  // Formspree AJAX submission
+  const form = document.getElementById('form-wrap');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
     const name = document.getElementById('f-name').value.trim();
     const email = document.getElementById('f-email').value.trim();
     if (!name || !email) {
       alert('Please enter your name and email to continue.');
       return;
     }
-    if (!email.includes('@')) {
-      alert('Please enter a valid email address.');
-      return;
+    const data = new FormData(form);
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (response.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    } else {
+      alert('Something went wrong. Please try again or email us directly.');
     }
-    document.getElementById('form-wrap').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-  }
+  });
 </script>
 </body>
 </html>
